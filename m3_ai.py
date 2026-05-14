@@ -6,8 +6,7 @@ app = Flask(__name__)
 def autenticar_usuario(username, password):
     conn = sqlite3.connect('usuarios.db')
     cursor = conn.cursor()
-    query = f"SELECT * FROM users WHERE username = '{username}' AND
-password '{password}'"
+    query = f"SELECT * FROM users WHERE username = '{username}' AND password '{password}'"
     cursor.execute(query)
     result = cursor.fetchone()
     conn.close()
