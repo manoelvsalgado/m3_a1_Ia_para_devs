@@ -1,6 +1,7 @@
 import sqlite3
 import os
 import subprocess
+import re
 from flask import Flask, request, make_response
 app = Flask(__name__)
 def autenticar_usuario(username, password):
@@ -15,8 +16,11 @@ def autenticar_usuario(username, password):
 
 @app.route("/ping")
 def ping():
-    ip = request.args.get("ip", "")
-    output = subprocess.getoutput(f"ping -c 1 {ip}")
+    ip = request.args.get("ip", "").strip()
+    if not re.fullmatch(r"(?=.{1,253}$)([a-zA-Z0-9-]{1,63}\.)*[a-zA-Z0-9-]{1,63}|(\d{1,3}\.){3}\d{1,3}", ip):
+        return make_response("Parâmetro 'ip' inválido.", 400)
+    result = subprocess.run(["ping", "-c", "1", ip], capture_output=True, text=True, check=False)
+    output = result.stdout if result.stdout else result.stderr
     return f"<pre>{output}</pre>"
 
 
